@@ -5,13 +5,13 @@
 Simple Javascript cryptography library that wraps incompatible WebCrypto implementations, 
 utilizes encryption algorithms that all WebCrypto enabled browsers support and provides 
 a much simpler interface. 
-
-## Supported Browsers
-### Updates
+## Updates
 
 1. Added AES-256 as default
 2. Made config options public 
 3. Added text encoding and decoding polyfills.
+
+## Supported Browsers
 
 ### (Desktop and mobile versions)
 * Chrome 41+
