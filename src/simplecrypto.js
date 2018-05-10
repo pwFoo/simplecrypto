@@ -19,14 +19,15 @@
     var _crypto = window.crypto || window.msCrypto;
     var _cryptoSubtle = _crypto.subtle || _crypto.webkitSubtle;
     var _indexedDB = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.msIndexedDB;
-        
+     
+
     var config = {
         aesCipher: "AES-CBC",
-        aesLength: 128,
+        aesLength: 256,
         aesIvLength: 16,
         hmacOptions: {
             name: "HMAC",
-            hash: { name: "SHA-1" },
+            hash: "SHA-256",
             // old webkit stores length in bytes, everything else in bits
             length: oldWebkit ? 20 : 160
         },
@@ -50,9 +51,10 @@
         
         
         pbkdf2: {
-            minIterations: 20000,
+            minIterations: 1,
             hash: "SHA-1"
-        }
+        },
+        maxInitialIteration : 4000
     };
 
    function wrap(result, onError, onSuccess) {
@@ -487,7 +489,7 @@
                     }
                 }
                 else {
-                    iterations = (util.getRandom(4000) + config.pbkdf2.minIterations);
+                    iterations = (util.getRandom(config.maxInitialIteration) + config.pbkdf2.minIterations);
                 }
                 wrap(_cryptoSubtle.deriveBits(
                         {
@@ -981,7 +983,7 @@
                     var keys = new Uint8Array(pbkdf2.derived);
                     var aesKeyLenght = config.aesLength / 8;                        
                     var aesKey = keys.subarray(0, aesKeyLenght);
-                    var hmacKey = keys.subarray(aesKeyLenght);
+                    var hmacKey = keys.subarray(config.aesIvLength);
                     simpleCrypto.sym.encrypt({aesKey: aesKey, hmacKey: hmacKey}, data, onError, function(encrypted){
                        encrypted.pbkdf2_salt = pbkdf2.salt;
                        encrypted.pbkdf2_iter = pbkdf2.iterations;
@@ -1024,7 +1026,7 @@
                         var keys = new Uint8Array(pbkdf2.derived);
                         var aesKeyLenght = config.aesLength / 8;                        
                         var aesKey = keys.subarray(0, aesKeyLenght);
-                        var hmacKey = keys.subarray(aesKeyLenght);
+                        var hmacKey = keys.subarray(config.aesIvLength);
                         simpleCrypto.sym.decrypt({aesKey: aesKey, hmacKey: hmacKey}, encrypted, onError, function(decrypted) {
                             onSuccess(decrypted);
                         });
@@ -1237,6 +1239,7 @@
     
     simpleCrypto.util = util;
     simpleCrypto.internal = internal;
-    
+    // Have config available on load
+    simpleCrypto.config = config;
     return simpleCrypto;
 }));
