@@ -1197,6 +1197,9 @@
             };
         },   
         put: function(key, value, onError, onSuccess) {
+            if (!value) {
+                return onError("Error storing '" + key + "' with empty value", event);
+            }
             this._openDB(onError, onSuccess, function(db, closeDB) {
                 var request = db.transaction(["keys"], "readwrite").objectStore("keys").put(value, key);
                 request.onsuccess = function(){
