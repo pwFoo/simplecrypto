@@ -1214,7 +1214,11 @@
                 var request = db.transaction(["keys"], "readonly").objectStore("keys").get(key);
                 request.onsuccess = function(){
                     closeDB();
-                    onSuccess(request.result);
+                    if (request.result) { // key isn't empty
+                        onSuccess(request.result);
+                    } else { // key empty, not existing
+                        onError("Error loading '" + key + "' not exists", event)
+                    }
                 };
                 request.onerror = function(event) {
                     closeDB();
