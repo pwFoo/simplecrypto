@@ -1205,7 +1205,7 @@
                 };
                 request.onerror = function(event) {
                     closeDB();
-                    onError("Error storing value", event);
+                    onError("Error storing '" + key + "'", event);
                 };
             });
         },
@@ -1218,7 +1218,7 @@
                 };
                 request.onerror = function(event) {
                     closeDB();
-                    onError("Error storing value", event);
+                    onError("Error loading '" + key + "'", event);
                 };
             });
         },
@@ -1231,7 +1231,7 @@
                 };
                 request.onerror = function(event) {
                     closeDB();
-                    onError("Error storing value", event);
+                    onError("Error deleting '" + key + "'", event);
                 };
             });
         }
